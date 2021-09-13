@@ -1,0 +1,19 @@
+#type:ignore
+import rp2
+
+# State machine assembly code. For more info refer to 
+#  https://core-electronics.com.au/tutorials/how-to-use-ws2812b-rgb-leds-with-raspberry-pi-pico.html
+# Using modified timings more appropriate for the WS2815
+@rp2.asm_pio(sideset_init=rp2.PIO.OUT_LOW,out_shiftdir=rp2.PIO.SHIFT_LEFT,autopull=True,pull_thresh=24)
+def bitbang():
+    T1=2
+    T2=4
+    T3=2
+    wrap_target()
+    label("bitloop")
+    out(x, 1)               .side(0)    [T3-1]
+    jmp(not_x, "do_zero")   .side(1)    [T1-1]
+    jmp("bitloop")          .side(1)    [T2-1]
+    label("do_zero")
+    nop()                   .side(0)    [T2-1]
+    wrap()
